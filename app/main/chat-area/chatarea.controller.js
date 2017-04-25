@@ -18,8 +18,7 @@ export default class ChatController {
             })
         });
 
-        $scope.$on(this.pubnub.getPresenceEventNameFor(ChatService.channel), function (ngEvent, pnEvent) {
-            // apply presence event (join|leave) on users list
+        $scope.$on(this.pubnub.getPresenceEventNameFor(ChatService.channel), (ngEvent, pnEvent) => {
             this._presenceHandler(pnEvent);
         });
     }

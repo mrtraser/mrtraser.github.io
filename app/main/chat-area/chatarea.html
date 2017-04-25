@@ -4,14 +4,6 @@
             <div class="chat-area-wrapper">
                 <div class="chat-area-box">
                     <div class="chat-messages-wrapper">
-                        <!--<div class="chat-message-in">-->
-                            <!--<p>Username</p>-->
-                            <!--<p><small>Message Body</small></p>-->
-                        <!--</div>-->
-                        <!--<div class="chat-message-in">-->
-                            <!--<p>Username</p>-->
-                            <!--<p><small>Message Body</small>-->
-                        <!--</div>-->
                         <pre>{{ vm.messages | json }}</pre>
                     </div>
                 </div>
@@ -29,7 +21,9 @@
         </div>
         <div class="col-lg-6">
             <div map-lazy-load="https://maps.google.com/maps/api/js?key=AIzaSyAnhV-u806SSed0E_ATP2sRZllsq5X5rio">
-                <ng-map center="41,-87" zoom="3"></ng-map>
+                <ng-map center="32,11" zoom="12">
+                    <marker ng-repeat="p in vm.markers track by $index" position="{{p.lat}},{{p.lng}}"></marker>
+                </ng-map>
             </div>
         </div>
     </div>

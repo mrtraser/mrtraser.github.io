@@ -6,6 +6,7 @@ import routes from './chat.routes.js'
 import navbar from './navbar/navbar.component'
 import chatArea from './chat-area/chatarea.component'
 import ChatService from './chat.service'
+import GeoService from './geo.service'
 
 export default angular.module('chat.main', [
     uirouter,
@@ -14,5 +15,7 @@ export default angular.module('chat.main', [
   .config(routes)
   .component('chatNavbar', navbar)
   .component('chatArea', chatArea)
+
   .service('ChatService', ChatService)
+  .service('GeoService', GeoService)
   .name

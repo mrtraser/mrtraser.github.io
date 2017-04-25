@@ -80,6 +80,14 @@ export default class ChatService {
     //     });
     // }
 
+    get currentState() {
+        return this.pubnub.hereNow({
+            channels: [this.channel],
+            includeUUIDs: true,
+            includeState: true
+        })
+    }
+
     get socket() {
         return this.pubnub;
     }

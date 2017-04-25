@@ -18,9 +18,9 @@ export default class ChatController {
             })
         });
 
-        $scope.$on(this.pubnub.getPresenceEventNameFor(ChatService.channel), (ngEvent, pnEvent) => {
-            this._presenceHandler(pnEvent);
-        });
+        // $scope.$on(this.pubnub.getPresenceEventNameFor(ChatService.channel), (ngEvent, pnEvent) => {
+        //     this._presenceHandler(pnEvent);
+        // });
     }
 
     $onInit() {
@@ -31,6 +31,8 @@ export default class ChatController {
             this.map = map;
 
             this._initUserPosition(this.geo);
+
+            this._initChatUsers();
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
@@ -61,6 +63,12 @@ export default class ChatController {
         this.map.setCenter(marker);
         if (replace) { this.markers = [] }
         this.markers.push(marker);
+    }
+
+    _initChatUsers() {
+        this.socket.currentState.then((res) => {
+           console.log('Init chat', res);
+        });
     }
 
     _pushMarkerToMap(marker) {

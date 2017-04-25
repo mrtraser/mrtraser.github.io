@@ -7,6 +7,7 @@ export default class ChatController {
     ) {
         this.messages = [];
         this.markers = [];
+        this.users = {};
         this.pubnub = ChatService.socket;
         this.socket = ChatService;
         this._ngmap = NgMap;
@@ -18,9 +19,9 @@ export default class ChatController {
             })
         });
 
-        // $scope.$on(this.pubnub.getPresenceEventNameFor(ChatService.channel), (ngEvent, pnEvent) => {
-        //     this._presenceHandler(pnEvent);
-        // });
+        $scope.$on(this.pubnub.getPresenceEventNameFor(ChatService.channel), (ngEvent, pnEvent) => {
+            this._presenceHandler(pnEvent);
+        });
     }
 
     $onInit() {
@@ -31,8 +32,6 @@ export default class ChatController {
             this.map = map;
 
             this._initUserPosition(this.geo);
-
-            this._initChatUsers();
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
@@ -54,6 +53,10 @@ export default class ChatController {
         });
     }
 
+    _initUser() {
+
+    }
+
     _initUserPosition(geo, replace = false) {
         const marker = geo.coords ?
                     { lat: geo.coords.latitude, lng: geo.coords.longitude }
@@ -63,12 +66,7 @@ export default class ChatController {
         this.map.setCenter(marker);
         if (replace) { this.markers = [] }
         this.markers.push(marker);
-    }
-
-    _initChatUsers() {
-        this.socket.currentState.then((res) => {
-           console.log('Init chat', res);
-        });
+        this.socket.setUserState(marker);
     }
 
     _pushMarkerToMap(marker) {
@@ -77,6 +75,14 @@ export default class ChatController {
 
     _presenceHandler(pnEvent) {
         console.log('Presence Event', pnEvent);
+        this._scope.$apply(() => {
+            if (pnEvent.action === `join` && pnEvent.uuid !== this.socket.uuid) {
+                this.users[pnEvent.uuid] = {};
+            }
+            else if (pnEvent.action === `state-change` && this.users[pnEvent.uuid]) {
+                this.users[pnEvent.uuid].state = Object.assign({}, pnEvent.state);
+            }
+        });
     }
 
     sendMessage() {

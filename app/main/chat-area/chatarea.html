@@ -25,6 +25,7 @@
                     <marker ng-repeat="p in vm.markers track by $index" position="{{p.lat}},{{p.lng}}"></marker>
                 </ng-map>
             </div>
+            <pre>{{ vm.users | json }}</pre>
         </div>
     </div>
 </div>

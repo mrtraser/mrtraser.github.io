@@ -135,6 +135,12 @@ export default class ChatController {
         }, this.delay)
     }
 
+    checkEnter(e) {
+        if (parseInt(e.keyCode) === 13 || parseInt(e.which) === 13) {
+            this.sendMessage();
+        }
+    }
+
     // avatarUrl(uuid) {
     //     return 'http://robohash.org/'+uuid+'?set=set2&bgset=bg2&size=70x70';
     // }

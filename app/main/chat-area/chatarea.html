@@ -12,7 +12,6 @@
             <div class="chat-area-wrapper">
                 <div class="chat-area-box">
                     <div class="chat-messages-wrapper" scroll-bottom="vm.messages">
-                        <!--<pre>{{ vm.messages | json }}</pre>-->
                         <div class="message-wrapper" ng-repeat="message in vm.messages" ng-class="{'mine': message.sender_uuid === vm.uuid}">
                             <div class="message">
                                 <p><strong>{{ message.name }}</strong></p>
@@ -33,6 +32,7 @@
                                     placeholder="Type your message here..."
                                     ng-model="vm.messageContent"
                                     ng-change="vm.toggleUserTyping()"
+                                    ng-keypress="vm.checkEnter($event)"
                             ></textarea>
                         </div>
                         <div class="form-actions">
@@ -45,9 +45,8 @@
         <div class="col-lg-6">
             <div map-lazy-load="https://maps.google.com/maps/api/js?key=AIzaSyAnhV-u806SSed0E_ATP2sRZllsq5X5rio">
                 <ng-map center="59, 18" zoom="10">
-                    <marker ng-repeat="(key, value) in vm.users track by $index" position="{{value.location.lat}},{{value.location.lng}}" ng-if="value.location"></marker>
+                    <marker ng-repeat="(key, value) in vm.users track by $index" position="{{value.location.lat}},{{value.location.lng}}" animation="{{ value.typing ? 'BOUNCE' : 'NONE'}}" ng-if="value.location"></marker>
                 </ng-map>
-                <pre>{{ vm.users | json }}</pre>
             </div>
         </div>
     </div>

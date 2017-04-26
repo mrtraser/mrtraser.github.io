@@ -32,7 +32,7 @@
                                     placeholder="Type your message here..."
                                     ng-model="vm.messageContent"
                                     ng-change="vm.toggleUserTyping()"
-                                    ng-keypress="vm.checkEnter($event)"
+                                    ng-enter="vm.sendMessage()"
                             ></textarea>
                         </div>
                         <div class="form-actions">

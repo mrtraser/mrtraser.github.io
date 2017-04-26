@@ -8,6 +8,9 @@ import run from './app.run'
 import main from './main'
 import auth from './auth'
 
+import ngEnter from './directives/ng-enter'
+import scrollBottom from './directives/scroll-bottom'
+
 angular.module('chat', [
     ngCoockies,
     uiRouter,
@@ -17,4 +20,6 @@ angular.module('chat', [
     auth
 ])
     .config(routes)
-    .run(run);
+    .run(run)
+    .directive('ngEnter', ngEnter)
+    .directive('scrollBottom', scrollBottom);

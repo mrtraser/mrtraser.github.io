@@ -7,7 +7,7 @@ export default class LoginController {
     }
 
     signUp() {
-        const send = { name: this.name, uuid: _.random(100).toString() };
+        const send = { name: this.name, uuid: _.random(1000000).toString() };
         this._auth.setUser(send);
         this._state.go('chat');
     }

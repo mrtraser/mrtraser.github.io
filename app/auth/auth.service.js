@@ -1,7 +1,8 @@
 export default class AuthService {
-    constructor($cookies) {
+    constructor($cookies, ChatService) {
         this.currentUser = {};
         this._coockies = $cookies;
+        this._chat = ChatService;
     }
 
     get user() {
@@ -16,6 +17,7 @@ export default class AuthService {
     }
 
     unsetUser() {
+        this._chat.unsubscribe();
         this.currentUser = {};
         this._coockies.remove('_user');
     }

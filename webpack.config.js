@@ -6,14 +6,14 @@ module.exports = {
     },
     module: {
         loaders: [
-          {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader',
-        },
-        { test: /\.html$/, loader: "html" },
-        { test: /\.css$/, loader: "style!css" }
-      ]
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+            },
+            { test: /\.html$/, loader: "html" },
+            { test: /\.css$/, loader: "style!css" }
+        ]
     },
     devtool: "#inline-source-map"
 }

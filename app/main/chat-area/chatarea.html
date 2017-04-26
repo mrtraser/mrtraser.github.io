@@ -21,8 +21,8 @@
         </div>
         <div class="col-lg-6">
             <div map-lazy-load="https://maps.google.com/maps/api/js?key=AIzaSyAnhV-u806SSed0E_ATP2sRZllsq5X5rio">
-                <ng-map center="32,11" zoom="12">
-                    <marker ng-repeat="p in vm.markers track by $index" position="{{p.lat}},{{p.lng}}"></marker>
+                <ng-map center="59, 18" zoom="10">
+                    <marker ng-repeat="(key, value) in vm.users track by $index" position="{{value.location.lat}},{{value.location.lng}}"></marker>
                 </ng-map>
             </div>
             <pre>{{ vm.users | json }}</pre>

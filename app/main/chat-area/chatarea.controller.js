@@ -1,9 +1,12 @@
 /* global google */
+import _ from 'lodash'
+
 export default class ChatController {
     constructor(
         $scope,
         ChatService,
-        NgMap
+        NgMap,
+        AuthService
     ) {
         this.messages = [];
         this.markers = [];
@@ -12,10 +15,12 @@ export default class ChatController {
         this.socket = ChatService;
         this._ngmap = NgMap;
         this._scope = $scope;
+        this.uuid = AuthService.user.uuid;
+        this.userName = AuthService.user.name;
 
         $scope.$on(this.pubnub.getMessageEventNameFor(ChatService.channel), (ngEvent, message) => {
             $scope.$apply(() => {
-                this.messages.push(message);
+                this.messages.push(message.message);
             })
         });
 
@@ -25,13 +30,29 @@ export default class ChatController {
     }
 
     $onInit() {
-        // this.socket.getHistory().then((res) => {
-        //     console.log(res);
-        // });
+        this.socket.init(this.uuid);
+        this.socket.subscribe();
+
+
         this._ngmap.getMap().then((map) => {
             this.map = map;
 
             this._initUserPosition(this.geo);
+            this._initUsers().then((res) => {
+                console.log(res);
+                if (res.channels && res.channels[this.socket.channel]) {
+                    const users = Array.isArray(res.channels[this.socket.channel].occupants) ? res.channels[this.socket.channel].occupants.slice() : [];
+                    _.forEach(users, (el) => {
+                        this.users[el.uuid] = Object.assign({}, el.state);
+                    })
+                }
+
+                this.socket.getHistory().then((res) => {
+                    _.forEach(res.messages, (el) => {
+                        this.messages.push(el.entry);
+                    });
+                })
+            });
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
@@ -53,8 +74,8 @@ export default class ChatController {
         });
     }
 
-    _initUser() {
-
+    _initUsers() {
+        return this.socket.currentChatState;
     }
 
     _initUserPosition(geo, replace = false) {
@@ -62,25 +83,22 @@ export default class ChatController {
                     { lat: geo.coords.latitude, lng: geo.coords.longitude }
                     : {lat: geo.latitude, lng: geo.longitude};
 
-        marker.uuid = this.socket.uuid;
         this.map.setCenter(marker);
         if (replace) { this.markers = [] }
-        this.markers.push(marker);
-        this.socket.setUserState(marker);
-    }
-
-    _pushMarkerToMap(marker) {
-        this.markers.push(marker);
+        this.socket.setUserState(marker, this.uuid, this.userName);
     }
 
     _presenceHandler(pnEvent) {
         console.log('Presence Event', pnEvent);
         this._scope.$apply(() => {
-            if (pnEvent.action === `join` && pnEvent.uuid !== this.socket.uuid) {
+            if (pnEvent.action === `join`) {
                 this.users[pnEvent.uuid] = {};
             }
             else if (pnEvent.action === `state-change` && this.users[pnEvent.uuid]) {
-                this.users[pnEvent.uuid].state = Object.assign({}, pnEvent.state);
+                this.users[pnEvent.uuid] = Object.assign({}, pnEvent.state);
+            }
+            else if (pnEvent.action === `timeout` || pnEvent.action === `leave`) {
+                delete this.users[pnEvent.uuid];
             }
         });
     }
@@ -89,14 +107,13 @@ export default class ChatController {
         if (!this.messageContent || this.messageContent === '') {
             return;
         }
-        this.socket.sendMessage(this.messageContent)
+        this.socket.sendMessage(this.messageContent, this.uuid, this.userName)
             .then((res) => {
-                console.log(res);
+                this.messageContent = '';
             });
-        this.messageContent = '';
     }
 
-    avatarUrl(uuid) {
-        return 'http://robohash.org/'+uuid+'?set=set2&bgset=bg2&size=70x70';
-    }
+    // avatarUrl(uuid) {
+    //     return 'http://robohash.org/'+uuid+'?set=set2&bgset=bg2&size=70x70';
+    // }
 }

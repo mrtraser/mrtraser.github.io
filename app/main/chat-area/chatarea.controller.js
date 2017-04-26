@@ -36,9 +36,8 @@ export default class ChatController {
         this.socket.init(this.uuid);
         this.socket.subscribe();
 
-        this.isLoading = true;
-
         this._ngmap.getMap().then((map) => {
+            this.isLoading = true;
             this.map = map;
 
             this._initUserPosition(this.geo);

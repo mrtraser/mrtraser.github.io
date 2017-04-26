@@ -11,7 +11,7 @@ export default class ChatService {
             publishKey: 'pub-c-937cb16f-5261-4d8c-9fc5-891a3d489147',
             subscribeKey: 'sub-c-fe81cfba-2a46-11e7-87b6-02ee2ddab7fe',
             uuid,
-            presenceTimeout: 300
+            presenceTimeout: 60
         });
     }
 

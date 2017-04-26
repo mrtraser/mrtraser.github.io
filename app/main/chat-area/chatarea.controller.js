@@ -39,10 +39,8 @@ export default class ChatController {
         this._ngmap.getMap().then((map) => {
             this.isLoading = true;
             this.map = map;
-
             this._initUserPosition(this.geo);
             this._initUsers().then((res) => {
-                console.log('Init users');
                 if (res.channels && res.channels[this.socket.channel]) {
                     const users = Array.isArray(res.channels[this.socket.channel].occupants) ? res.channels[this.socket.channel].occupants.slice() : [];
                     _.forEach(users, (el) => {
@@ -51,14 +49,16 @@ export default class ChatController {
                 }
 
                 this.socket.getHistory().then((res) => {
-                    console.log('Get history')
                     _.forEach(res.messages, (el) => {
                         this.messages.push(el.entry);
                     });
-                    this.isLoading = false;
+                    this._scope.$apply(() => {
+                        this.isLoading = false;
+                    });
                 }).catch((err) => {
-                    this.isLoading = false;
-                    console.log(err);
+                    this._scope.$apply(() => {
+                        this.isLoading = false;
+                    });
                 })
             });
 
@@ -76,6 +76,10 @@ export default class ChatController {
             } else {
                 console.info('Geolocation is not available!');
             }
+
+            this._timeout(() => {
+                this.isLoading = false;
+            }, 3000);
         });
     }
 
@@ -94,7 +98,6 @@ export default class ChatController {
     }
 
     _presenceHandler(pnEvent) {
-        console.log('Presence Event', pnEvent);
         this._scope.$apply(() => {
             if (pnEvent.action === `join`) {
                 this.users[pnEvent.uuid] = {};
@@ -122,15 +125,12 @@ export default class ChatController {
         const state = this.users[this.uuid];
 
         if (this.userIsTyping) {
-            console.log('Unset timer');
             this._timeout.cancel(this.userIsTyping);
         }
         if (!state.typing) {
-            console.log('Set User typing');
             this.socket.toggleUserTyping(this.uuid, state, true);
         }
         this.userIsTyping = this._timeout(() => {
-            console.log('Unset User typing');
             this.socket.toggleUserTyping(this.uuid, state, false);
         }, this.delay)
     }
@@ -140,8 +140,4 @@ export default class ChatController {
             this.sendMessage();
         }
     }
-
-    // avatarUrl(uuid) {
-    //     return 'http://robohash.org/'+uuid+'?set=set2&bgset=bg2&size=70x70';
-    // }
 }

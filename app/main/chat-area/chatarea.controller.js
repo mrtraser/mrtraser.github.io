@@ -4,10 +4,12 @@ import _ from 'lodash'
 export default class ChatController {
     constructor(
         $scope,
+        $timeout,
         ChatService,
         NgMap,
         AuthService
     ) {
+        this.delay = 2000;
         this.messages = [];
         this.markers = [];
         this.users = {};
@@ -15,6 +17,7 @@ export default class ChatController {
         this.socket = ChatService;
         this._ngmap = NgMap;
         this._scope = $scope;
+        this._timeout = $timeout;
         this.uuid = AuthService.user.uuid;
         this.userName = AuthService.user.name;
 
@@ -40,7 +43,7 @@ export default class ChatController {
 
             this._initUserPosition(this.geo);
             this._initUsers().then((res) => {
-                // console.log(res);
+                console.log('Init users');
                 if (res.channels && res.channels[this.socket.channel]) {
                     const users = Array.isArray(res.channels[this.socket.channel].occupants) ? res.channels[this.socket.channel].occupants.slice() : [];
                     _.forEach(users, (el) => {
@@ -49,6 +52,7 @@ export default class ChatController {
                 }
 
                 this.socket.getHistory().then((res) => {
+                    console.log('Get history')
                     _.forEach(res.messages, (el) => {
                         this.messages.push(el.entry);
                     });
@@ -113,6 +117,23 @@ export default class ChatController {
             .then((res) => {
                 this.messageContent = '';
             });
+    }
+
+    toggleUserTyping() {
+        const state = this.users[this.uuid];
+
+        if (this.userIsTyping) {
+            console.log('Unset timer');
+            this._timeout.cancel(this.userIsTyping);
+        }
+        if (!state.typing) {
+            console.log('Set User typing');
+            this.socket.toggleUserTyping(this.uuid, state, true);
+        }
+        this.userIsTyping = this._timeout(() => {
+            console.log('Unset User typing');
+            this.socket.toggleUserTyping(this.uuid, state, false);
+        }, this.delay)
     }
 
     // avatarUrl(uuid) {

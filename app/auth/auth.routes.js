@@ -2,7 +2,7 @@ routes.$inject = ['$stateProvider'];
 export default function routes($stateProvider) {
     $stateProvider
         .state('signup', {
-            url: '/',
+            url: '/signup',
             template: require('./auth.html')
         });
 }

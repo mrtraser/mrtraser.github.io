@@ -25,7 +25,15 @@
                 <div class="chat-field">
                     <form name="form" ng-submit="vm.sendMessage()" role="form">
                         <div class="form-group">
-                            <textarea name="message" id="message" rows="5" class="form-control" placeholder="Type your message here..." ng-model="vm.messageContent"></textarea>
+                            <textarea
+                                    name="message"
+                                    id="message"
+                                    rows="5"
+                                    class="form-control"
+                                    placeholder="Type your message here..."
+                                    ng-model="vm.messageContent"
+                                    ng-change="vm.toggleUserTyping()"
+                            ></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary btn-block">Send</button>
@@ -39,6 +47,7 @@
                 <ng-map center="59, 18" zoom="10">
                     <marker ng-repeat="(key, value) in vm.users track by $index" position="{{value.location.lat}},{{value.location.lng}}" ng-if="value.location"></marker>
                 </ng-map>
+                <pre>{{ vm.users | json }}</pre>
             </div>
         </div>
     </div>

@@ -8,10 +8,10 @@ export default class ChatService {
 
     init(uuid) {
         this.pubnub.init({
-            publishKey: 'pub-c-7802bed3-e993-4ceb-80b6-6bace1de568f',
-            subscribeKey: 'sub-c-e267f03a-29b9-11e7-bc52-02ee2ddab7fe',
+            publishKey: 'pub-c-937cb16f-5261-4d8c-9fc5-891a3d489147',
+            subscribeKey: 'sub-c-fe81cfba-2a46-11e7-87b6-02ee2ddab7fe',
             uuid,
-            presenceTimeout: 20
+            presenceTimeout: 300
         });
     }
 
@@ -55,6 +55,22 @@ export default class ChatService {
                 name,
                 location
             },
+            uuid,
+            channels: [this.channel]
+        })
+    }
+
+    getUserState(uuid) {
+        return this.pubnub.getState({
+            uuid,
+            channels: [this.channel]
+        })
+    }
+
+    toggleUserTyping(uuid, state, typing=false) {
+        state.typing = typing;
+        return this.pubnub.setState({
+            state,
             uuid,
             channels: [this.channel]
         })

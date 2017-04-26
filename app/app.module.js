@@ -18,4 +18,3 @@ angular.module('chat', [
 ])
     .config(routes)
     .run(run);
-

@@ -4,7 +4,6 @@ export default function run($rootScope, $state, $cookies, $timeout, AuthService,
     AuthService.setUser($cookies.getObject('_user'));
 
     $rootScope.$on('$stateChangeStart', function (e, to, toParams, from) {
-        // debugger;
         if (to.name === 'signup'){
             if (AuthService.isRegistered() && from && from.name){
                 e.preventDefault();

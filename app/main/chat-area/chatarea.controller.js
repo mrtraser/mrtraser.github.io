@@ -33,13 +33,14 @@ export default class ChatController {
         this.socket.init(this.uuid);
         this.socket.subscribe();
 
+        this.isLoading = true;
 
         this._ngmap.getMap().then((map) => {
             this.map = map;
 
             this._initUserPosition(this.geo);
             this._initUsers().then((res) => {
-                console.log(res);
+                // console.log(res);
                 if (res.channels && res.channels[this.socket.channel]) {
                     const users = Array.isArray(res.channels[this.socket.channel].occupants) ? res.channels[this.socket.channel].occupants.slice() : [];
                     _.forEach(users, (el) => {
@@ -51,25 +52,26 @@ export default class ChatController {
                     _.forEach(res.messages, (el) => {
                         this.messages.push(el.entry);
                     });
+                    this.isLoading = false;
+                }).catch((err) => {
+                    this.isLoading = false;
+                    console.log(err);
                 })
             });
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        console.log('Allowed');
-                        console.log(position);
-                        this.geo = position;
                         this._scope.$apply(() => {
                             this._initUserPosition(position, true);
                         });
                     },
                     (err) => {
-                        console.log('Geolocation is not allowed');
+                        console.info('Geolocation is not allowed');
                     }
                 );
             } else {
-                console.log('Geolocation is not available!');
+                console.info('Geolocation is not available!');
             }
         });
     }
